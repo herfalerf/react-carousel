@@ -1,5 +1,10 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import {
+  render,
+  fireEvent,
+  queryByTestId,
+  queryByAltText,
+} from "@testing-library/react";
 import Carousel from "./Carousel";
 
 it("renders without crashing", function () {
@@ -56,4 +61,42 @@ it("works when you click on the left arrow", function () {
   expect(
     queryByAltText("Photo by Pratik Patel on Unsplash")
   ).not.toBeInTheDocument();
+});
+
+it("should hide the right arrow when on last image", function () {
+  const { queryByTestId, queryByAltText } = render(<Carousel />);
+
+  expect(
+    queryByAltText("Photo by Richard Pasquarella on Unsplash")
+  ).toBeInTheDocument();
+  const rightArrow = queryByTestId("right-arrow");
+  expect(rightArrow).toBeInTheDocument();
+  fireEvent.click(rightArrow);
+  fireEvent.click(rightArrow);
+  expect(queryByAltText("Photo by Josh Post on Unsplash")).toBeInTheDocument();
+  expect(rightArrow).not.toBeInTheDocument();
+});
+
+it("should hide the left arrow when on the first image", function () {
+  const { queryByTestId, queryByAltText } = render(<Carousel />);
+
+  const leftArrow = queryByTestId("left-arrow");
+  const rightArrow = queryByTestId("right-arrow");
+
+  expect(
+    queryByAltText("Photo by Richard Pasquarella on Unsplash")
+  ).toBeInTheDocument();
+  expect(
+    queryByAltText("Photo by Pratik Patel on Unsplash")
+  ).not.toBeInTheDocument();
+  expect(leftArrow).notToBeInTheDocument();
+
+  fireEvent.click(rightArrow);
+  expect(
+    queryByAltText("Photo by Pratik Patel on Unsplash")
+  ).toBeInTheDocument();
+  expect(
+    queryByAltText("Photo by Richard Pasquarella on Unsplash")
+  ).not.toBeInTheDocument();
+  expect(leftArrow).toBeInTheDocument();
 });
